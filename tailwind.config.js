@@ -8,32 +8,23 @@ module.exports = {
     './src/app/**/*.{js,jsx}',
   ],
   theme: {
-    container: {
-      center: true,
-      padding: "2rem",
-      screens: {
-        "2xl": "1400px",
-      },
-    },
     extend: {
       colors: {
+        // You can change these colors to match your preferred theme
         primary: {
-          DEFAULT: "#4F46E5",
-          dark: "#4338CA",
+          DEFAULT: '#4F46E5', // Indigo
+          dark: '#4338CA',
+          light: '#E0E7FF'
         },
         secondary: {
-          DEFAULT: "#10B981",
-          dark: "#059669",
+          DEFAULT: '#10B981', // Emerald
+          dark: '#059669'
         },
-        background: "#FFFFFF",
-        foreground: "#1F2937",
-      },
-      borderRadius: {
-        lg: "0.5rem",
-        md: "0.375rem",
-        sm: "0.25rem",
-      },
-    },
+        textPrimary: '#1F2937',  // Dark gray for main text
+        textSecondary: '#4B5563', // Medium gray for secondary text
+        background: '#F9FAFB', // Light gray background
+      }
+    }
   },
   plugins: [],
 }
