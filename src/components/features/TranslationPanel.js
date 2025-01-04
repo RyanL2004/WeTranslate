@@ -1,6 +1,6 @@
 // src/components/features/TranslationPanel.js
 'use client'
-
+import FileUploadZone from './FileUploadZone'
 import { useState } from 'react'
 import { ArrowLeftRight, Volume2, Copy, RotateCcw, FileText, MessageSquare, Microscope, Book, Globe } from 'lucide-react'
 import { TRANSLATION_TYPES } from '@/lib/constants'
@@ -53,6 +53,21 @@ export default function TranslationPanel() {
       setIsTranslating(false)
     }
   }
+
+  const showFileUpload = translationType === TRANSLATION_TYPES.DOCUMENTS || 
+                      translationType === TRANSLATION_TYPES.PROFESSIONAL ||
+                      translationType === TRANSLATION_TYPES.SCIENTIFIC
+
+                      const copyToClipboard = async (text) => {
+                        try {
+                          await navigator.clipboard.writeText(text)
+                          // You could add a toast notification here
+                          console.log('Copied to clipboard')
+                        } catch (err) {
+                          console.error('Failed to copy:', err)
+                        }
+                      }
+  
 
   return (
     <div className="max-w-6xl mx-auto p-6">
