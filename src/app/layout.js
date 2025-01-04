@@ -8,14 +8,13 @@ export const metadata = {
   description: 'AI-powered translation platform'
 }
 
+// src/app/layout.js
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-    <body className={inter.className}>
-      <main className="min-h-screen bg-background">
+      <body className="bg-background min-h-screen text-textPrimary">
         {children}
-      </main>
-    </body>
-  </html>
+      </body>
+    </html>
   )
 }

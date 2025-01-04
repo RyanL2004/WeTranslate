@@ -1,59 +1,95 @@
-'use client'
+"use client";
 
-import { useState } from 'react'
-import { ArrowLeftRight, Volume2, Copy, RotateCcw, FileText, MessageSquare, Microscope, Book, Globe } from 'lucide-react'
-import FileUploadZone from './FileUploadZone'
+import { useState } from "react";
+import {
+  ArrowLeftRight,
+  Volume2,
+  Copy,
+  RotateCcw,
+  FileText,
+  MessageSquare,
+  Microscope,
+  Book,
+  Globe,
+} from "lucide-react";
+import FileUploadZone from "./FileUploadZone";
+import openai from "openai";
 
 export const TRANSLATION_TYPES = {
-  GENERAL: 'general',
-  PROFESSIONAL: 'professional',
-  SCIENTIFIC: 'scientific',
-  DOCUMENTS: 'documents',
-  CONVERSATION: 'conversation'
-}
+  GENERAL: "general",
+  PROFESSIONAL: "professional",
+  SCIENTIFIC: "scientific",
+  DOCUMENTS: "documents",
+  CONVERSATION: "conversation",
+};
+
+openai.apiKey = process.env.REACT_APP_OPENAI_API_KEY;
 
 export default function TranslationPanel() {
-  const [sourceText, setSourceText] = useState('')
-  const [targetText, setTargetText] = useState('')
-  const [sourceLang, setSourceLang] = useState('en')
-  const [targetLang, setTargetLang] = useState('fr')
-  const [translationType, setTranslationType] = useState(TRANSLATION_TYPES.GENERAL)
-  const [isTranslating, setIsTranslating] = useState(false)
+  const [sourceText, setSourceText] = useState("");
+  const [targetText, setTargetText] = useState("");
+  const [sourceLang, setSourceLang] = useState("en");
+  const [targetLang, setTargetLang] = useState("fr");
+  const [translationType, setTranslationType] = useState(
+    TRANSLATION_TYPES.GENERAL
+  );
+  const [isTranslating, setIsTranslating] = useState(false);
 
   const languages = [
-    { code: 'en', name: 'English' },
-    { code: 'fr', name: 'French' },
-    { code: 'es', name: 'Spanish' },
-    { code: 'de', name: 'German' },
-    { code: 'it', name: 'Italian' },
-  ]
+    { code: "en", name: "English" },
+    { code: "fr", name: "French" },
+    { code: "es", name: "Spanish" },
+    { code: "de", name: "German" },
+    { code: "it", name: "Italian" },
+  ];
 
   const translationModes = [
-    { type: TRANSLATION_TYPES.GENERAL, icon: Globe, label: 'General Translation', 
-      description: 'For everyday translation needs' },
-    { type: TRANSLATION_TYPES.PROFESSIONAL, icon: FileText, label: 'Professional Documents', 
-      description: 'For business and legal documents' },
-    { type: TRANSLATION_TYPES.SCIENTIFIC, icon: Microscope, label: 'Scientific Content', 
-      description: 'For research papers and technical documents' },
-    { type: TRANSLATION_TYPES.DOCUMENTS, icon: Book, label: 'ID & Official Documents', 
-      description: 'For certificates, IDs, and official papers' },
-    { type: TRANSLATION_TYPES.CONVERSATION, icon: MessageSquare, label: 'Daily Communication', 
-      description: 'For casual conversations and messages' }
-  ]
+    {
+      type: TRANSLATION_TYPES.GENERAL,
+      icon: Globe,
+      label: "General Translation",
+      description: "For everyday translation needs",
+    },
+    {
+      type: TRANSLATION_TYPES.PROFESSIONAL,
+      icon: FileText,
+      label: "Professional Documents",
+      description: "For business and legal documents",
+    },
+    {
+      type: TRANSLATION_TYPES.SCIENTIFIC,
+      icon: Microscope,
+      label: "Scientific Content",
+      description: "For research papers and technical documents",
+    },
+    {
+      type: TRANSLATION_TYPES.DOCUMENTS,
+      icon: Book,
+      label: "ID & Official Documents",
+      description: "For certificates, IDs, and official papers",
+    },
+    {
+      type: TRANSLATION_TYPES.CONVERSATION,
+      icon: MessageSquare,
+      label: "Daily Communication",
+      description: "For casual conversations and messages",
+    },
+  ];
 
-  const showFileUpload = translationType === TRANSLATION_TYPES.DOCUMENTS || 
-                        translationType === TRANSLATION_TYPES.PROFESSIONAL ||
-                        translationType === TRANSLATION_TYPES.SCIENTIFIC
+  const showFileUpload =
+    translationType === TRANSLATION_TYPES.DOCUMENTS ||
+    translationType === TRANSLATION_TYPES.PROFESSIONAL ||
+    translationType === TRANSLATION_TYPES.SCIENTIFIC;
 
   const handleTranslate = async () => {
-    if (!sourceText.trim()) return
-    setIsTranslating(true)
+    if (!sourceText.trim()) return;
+    setIsTranslating(true);
 
     try {
       // ============== ADD YOUR API HERE ================
       // Replace this section with your API call:
-      /*
-      const response = await fetch('YOUR_API_ENDPOINT', {
+      
+      const response = await fetch(openai.apiKey, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -69,35 +105,30 @@ export default function TranslationPanel() {
 
       const data = await response.json();
       setTargetText(data.translatedText);
-      */
       
-      // Remove this placeholder once you add your API
-      setTargetText(`Translated: ${sourceText}`)
-      // ===============================================
-
     } catch (error) {
-      console.error('Translation error:', error)
+      console.error("Translation error:", error);
       // Add error handling here
     } finally {
-      setIsTranslating(false)
+      setIsTranslating(false);
     }
-  }
+  };
 
   const swapLanguages = () => {
-    setSourceLang(targetLang)
-    setTargetLang(sourceLang)
-    setSourceText(targetText)
-    setTargetText(sourceText)
-  }
+    setSourceLang(targetLang);
+    setTargetLang(sourceLang);
+    setSourceText(targetText);
+    setTargetText(sourceText);
+  };
 
   const copyToClipboard = async (text) => {
     try {
-      await navigator.clipboard.writeText(text)
-      console.log('Copied to clipboard')
+      await navigator.clipboard.writeText(text);
+      console.log("Copied to clipboard");
     } catch (err) {
-      console.error('Failed to copy:', err)
+      console.error("Failed to copy:", err);
     }
-  }
+  };
 
   return (
     <div className="max-w-6xl mx-auto p-6">
@@ -110,15 +141,19 @@ export default function TranslationPanel() {
               onClick={() => setTranslationType(type)}
               className={`p-4 rounded-lg border-2 transition-all ${
                 translationType === type
-                  ? 'border-primary bg-primary/5'
-                  : 'border-gray-200 hover:border-primary/50'
+                  ? "border-primary bg-primary-light text-primary"
+                  : "border-gray-200 hover:border-primary hover:bg-primary-light/20"
               }`}
             >
-              <Icon className={`w-6 h-6 ${
-                translationType === type ? 'text-primary' : 'text-gray-500'
-              }`} />
-              <h3 className="font-semibold mt-2">{label}</h3>
-              <p className="text-sm text-gray-500 mt-1">{description}</p>
+              <Icon
+                className={`w-6 h-6 ${
+                  translationType === type
+                    ? "text-primary"
+                    : "text-textSecondary"
+                }`}
+              />
+              <h3 className="font-semibold mt-2 text-textPrimary">{label}</h3>
+              <p className="text-sm text-textSecondary mt-1">{description}</p>
             </button>
           ))}
         </div>
@@ -169,14 +204,14 @@ export default function TranslationPanel() {
               value={sourceText}
               onChange={(e) => setSourceText(e.target.value)}
               placeholder="Enter text to translate..."
-              className="w-full h-48 p-4 border rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-primary"
+              className="w-full h-48 p-4 border rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-primary text-textPrimary placeholder-textSecondary/60"
             />
             <div className="flex justify-between mt-2">
               <button className="p-2 hover:bg-gray-100 rounded-full">
                 <Volume2 className="w-5 h-5" />
               </button>
               <button
-                onClick={() => setSourceText('')}
+                onClick={() => setSourceText("")}
                 className="p-2 hover:bg-gray-100 rounded-full"
               >
                 <RotateCcw className="w-5 h-5" />
@@ -196,7 +231,7 @@ export default function TranslationPanel() {
               <button className="p-2 hover:bg-gray-100 rounded-full">
                 <Volume2 className="w-5 h-5" />
               </button>
-              <button 
+              <button
                 onClick={() => copyToClipboard(targetText)}
                 className="p-2 hover:bg-gray-100 rounded-full"
               >
@@ -213,14 +248,14 @@ export default function TranslationPanel() {
             disabled={isTranslating || !sourceText.trim()}
             className={`w-full py-3 rounded-lg transition-colors ${
               isTranslating || !sourceText.trim()
-                ? 'bg-gray-300 cursor-not-allowed'
-                : 'bg-primary text-white hover:bg-primary-dark'
+                ? "bg-gray-300 cursor-not-allowed"
+                : "bg-primary text-white hover:bg-primary-dark shadow-lg hover:shadow-xl"
             }`}
           >
-            {isTranslating ? 'Translating...' : 'Translate'}
+            {isTranslating ? "Translating..." : "Translate"}
           </button>
         </div>
       </div>
     </div>
-  )
+  );
 }

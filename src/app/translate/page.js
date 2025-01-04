@@ -21,7 +21,10 @@ export default function TranslatePage() {
           <h1 className="text-3xl font-bold text-center mb-10">
             Smart Translation
           </h1>
-          <TranslationPanel />
+          <div className="bg-white rounded-xl shadow-lg hover:shadow-xl transition-shadow p-6 border border-gray-100">
+            <TranslationPanel />
+          </div>
+          
         </div>
       </main>
     </div>
