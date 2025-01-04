@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { Globe, Mic, Type } from 'lucide-react'
 import TranslationPanel from '@/components/features/TranslationPanel';
 
+
 export default function Home() {
   return (
     <div className="flex flex-col min-h-screen">
