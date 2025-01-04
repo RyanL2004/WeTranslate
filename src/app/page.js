@@ -76,16 +76,6 @@ export default function Home() {
           </div>
         </div>
       </section>
-
-      {/* Translation Panel */}
-      <section className = "py-20 px-6 bg-gray-50">
-      <div className="max-w-7xl mx-auto">
-          <h2 className="text-3xl font-bold text-center mb-10">
-            Start Translating Now
-          </h2>
-          <TranslationPanel />
-        </div>
-      </section>
     </div>
   )
 }
