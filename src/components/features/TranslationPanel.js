@@ -11,29 +11,20 @@ import {
   Microscope,
   Book,
   Globe,
+  AlertCircle,
+  Loader2
 } from "lucide-react";
 import FileUploadZone from "./FileUploadZone";
-import openai from "openai";
-
-export const TRANSLATION_TYPES = {
-  GENERAL: "general",
-  PROFESSIONAL: "professional",
-  SCIENTIFIC: "scientific",
-  DOCUMENTS: "documents",
-  CONVERSATION: "conversation",
-};
-
-openai.apiKey = process.env.REACT_APP_OPENAI_API_KEY;
+import { TRANSLATION_TYPES } from '@/lib/constants';
 
 export default function TranslationPanel() {
   const [sourceText, setSourceText] = useState("");
   const [targetText, setTargetText] = useState("");
   const [sourceLang, setSourceLang] = useState("en");
   const [targetLang, setTargetLang] = useState("fr");
-  const [translationType, setTranslationType] = useState(
-    TRANSLATION_TYPES.GENERAL
-  );
+  const [translationType, setTranslationType] = useState(TRANSLATION_TYPES.GENERAL);
   const [isTranslating, setIsTranslating] = useState(false);
+  const [error, setError] = useState(null);
 
   const languages = [
     { code: "en", name: "English" },
@@ -81,38 +72,39 @@ export default function TranslationPanel() {
     translationType === TRANSLATION_TYPES.PROFESSIONAL ||
     translationType === TRANSLATION_TYPES.SCIENTIFIC;
 
-  const handleTranslate = async () => {
-    if (!sourceText.trim()) return;
-    setIsTranslating(true);
-
-    try {
-      // ============== ADD YOUR API HERE ================
-      // Replace this section with your API call:
-      
-      const response = await fetch(openai.apiKey, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          // Add any other headers your API needs
-        },
-        body: JSON.stringify({
-          text: sourceText,
-          from: sourceLang,
-          to: targetLang,
-          type: translationType
-        })
-      });
-
-      const data = await response.json();
-      setTargetText(data.translatedText);
-      
-    } catch (error) {
-      console.error("Translation error:", error);
-      // Add error handling here
-    } finally {
-      setIsTranslating(false);
-    }
-  };
+    const handleTranslate = async () => {
+        if (!sourceText.trim()) return;
+        setIsTranslating(true);
+        setError(null);
+    
+        try {
+          const response = await fetch('/api/translate', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              text: sourceText,
+              sourceLang,
+              targetLang,
+              translationType
+            })
+          });
+    
+          const data = await response.json();
+    
+          if (!response.ok) {
+            throw new Error(data.error || data.details || 'Translation failed');
+          }
+    
+          setTargetText(data.translatedText);
+        } catch (error) {
+          console.error("Translation error:", error);
+          setError(error.message || 'Translation failed. Please try again.');
+        } finally {
+          setIsTranslating(false);
+        }
+      };
 
   const swapLanguages = () => {
     setSourceLang(targetLang);
@@ -132,6 +124,15 @@ export default function TranslationPanel() {
 
   return (
     <div className="max-w-6xl mx-auto p-6">
+      {error && (
+        <div className="bg-red-50 border-l-4 border-red-400 p-4 mb-4">
+          <div className="flex">
+            <AlertCircle className="h-5 w-5 text-red-400" />
+            <p className="ml-3 text-red-700">{error}</p>
+          </div>
+        </div>
+      )}
+
       {/* Translation Mode Selection */}
       <div className="mb-8">
         <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
@@ -205,6 +206,7 @@ export default function TranslationPanel() {
               onChange={(e) => setSourceText(e.target.value)}
               placeholder="Enter text to translate..."
               className="w-full h-48 p-4 border rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-primary text-textPrimary placeholder-textSecondary/60"
+              disabled={isTranslating}
             />
             <div className="flex justify-between mt-2">
               <button className="p-2 hover:bg-gray-100 rounded-full">
@@ -221,12 +223,18 @@ export default function TranslationPanel() {
 
           {/* Target Text */}
           <div>
-            <textarea
-              value={targetText}
-              readOnly
-              placeholder="Translation will appear here..."
-              className="w-full h-48 p-4 border rounded-lg resize-none bg-gray-50"
-            />
+            {isTranslating ? (
+              <div className="h-48 flex items-center justify-center">
+                <Loader2 className="h-8 w-8 text-primary animate-spin" />
+              </div>
+            ) : (
+              <textarea
+                value={targetText}
+                readOnly
+                placeholder="Translation will appear here..."
+                className="w-full h-48 p-4 border rounded-lg resize-none bg-gray-50"
+              />
+            )}
             <div className="flex justify-between mt-2">
               <button className="p-2 hover:bg-gray-100 rounded-full">
                 <Volume2 className="w-5 h-5" />
